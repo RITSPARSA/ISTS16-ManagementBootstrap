@@ -1,0 +1,49 @@
+---
+
+- hosts: linux
+  tasks:
+    - name: Apply SSHD configuration
+      copy:
+        src: ./files/sshd_config
+        dest: /etc/ssh/sshd_config
+
+    - name: Upload SSH Key
+      copy:
+        src: ./files/ists_whiteteam.pub
+        dest: .ssh/authorized_keys
+        mode: 600
+        owner: root
+        group: root
+
+    - name: Install packages
+      package:
+          name: "{{ item }} "
+      when: ansible_os_family == "RedHat"
+      with_items:
+          - vim
+          - nc
+          - nmap
+     
+    - name: Install packages
+      package:
+          name: "{{ item }} "
+      when: ansible_os_family == "Debian"
+      with_items:
+          - vim
+          - netcat
+          - nmap
+
+    - name: Ensure SSHD is enabled
+      service: 
+        name: sshd
+        state: restarted
+        enabled: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Ensure SSH is enabled
+      service: 
+        name: ssh
+        state: restarted
+        enabled: yes
+      when: ansible_os_family == "Debian"
+
