@@ -23,7 +23,9 @@
           - vim
           - nc
           - nmap
-     
+          - git
+          - wget
+
     - name: Install packages
       package:
           name: "{{ item }} "
